@@ -1,0 +1,5 @@
+{
+  "name": "Tic-Tac-Toe Multiplayer",
+  "description": "A production-ready, server-authoritative real-time multiplayer Tic-Tac-Toe platform.",
+  "requestFramePermissions": []
+}
