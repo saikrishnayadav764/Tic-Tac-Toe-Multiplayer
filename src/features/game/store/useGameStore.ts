@@ -15,7 +15,7 @@ interface GameState {
   mode: "classic" | "timed" | null;
   userId: string | null;
   connected: boolean;
-  error: string | null;
+  error: { title: string; message: string } | null;
   
   setUsername: (username: string | null) => void;
   setMatchId: (matchId: string | null) => void;
@@ -31,7 +31,7 @@ interface GameState {
   setMode: (mode: "classic" | "timed" | null) => void;
   setUserId: (userId: string | null) => void;
   setConnected: (connected: boolean) => void;
-  setError: (error: string | null) => void;
+  setError: (error: { title: string; message: string } | null) => void;
   reset: () => void;
 }
 
