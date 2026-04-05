@@ -24,6 +24,15 @@ A production-ready, server-authoritative Tic-Tac-Toe game built with React and N
 - Node.js (v18+)
 - Nakama Server (v3.0+)
 
+### 🔐 Environment Variables
+
+Create a `.env` file in your frontend project root and add:
+
+```env
+NEXT_PUBLIC_NAKAMA_HOST=eef.monster
+NEXT_PUBLIC_NAKAMA_PORT=443
+NEXT_PUBLIC_NAKAMA_USE_SSL=true
+
 ### Frontend Setup
 1. Clone the repository.
 2. Install dependencies:
