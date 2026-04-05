@@ -78,9 +78,18 @@ export function GameClient() {
     }
   }, [status, isDraw, winner, symbol, username]);
 
-  const handleSetUsername = useCallback((name: string) => {
-    setUsername(name);
-  }, [setUsername]);
+  const handleSetUsername = useCallback(async (name: string) => {
+    try {
+      const { getNakamaSession } = await import("../../../lib/nakama");
+      await getNakamaSession(name);
+      setUsername(name);
+    } catch (e: any) {
+      setError({ 
+        title: "Username Taken", 
+        message: e.message || "This username is already in use. Please choose another." 
+      });
+    }
+  }, [setUsername, setError]);
 
   const handleLeaveMatch = useCallback(() => {
     setShowLeaveConfirmation(true);
@@ -97,7 +106,7 @@ export function GameClient() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-200 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -133,7 +142,7 @@ export function GameClient() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed top-4 z-[100] w-full max-w-md px-6 py-4 bg-rose-500/10 border border-rose-500/20 backdrop-blur-xl rounded-2xl flex items-center gap-4 shadow-xl shadow-rose-500/5"
+            className="fixed top-4 z-100 w-full max-w-md px-6 py-4 bg-rose-500/10 border border-rose-500/20 backdrop-blur-xl rounded-2xl flex items-center gap-4 shadow-xl shadow-rose-500/5"
           >
             <button 
               onClick={() => setError(null)}
@@ -142,8 +151,8 @@ export function GameClient() {
               <X className="w-5 h-5 text-rose-500" />
             </button>
             <div className="flex-1">
-              <p className="text-sm font-bold text-rose-200">Connection Error</p>
-              <p className="text-xs text-rose-400/80 line-clamp-1">{error}</p>
+              <p className="text-sm font-bold text-rose-200">{error.title}</p>
+              <p className="text-xs text-rose-400/80 line-clamp-1">{error.message}</p>
             </div>
           </motion.div>
         )}
