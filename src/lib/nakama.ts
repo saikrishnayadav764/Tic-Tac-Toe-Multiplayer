@@ -21,22 +21,47 @@ let nakamaSession: Session | null = null;
 let nakamaSocket: Socket | null = null;
 
 export const getNakamaSession = async (username: string): Promise<Session> => {
-  if (nakamaSession && !nakamaSession.isexpired) {
-    return nakamaSession;
+  // Restore session if it exists and is not expired.
+  const sessionString = localStorage.getItem("nakama_session");
+  if (sessionString) {
+    try {
+      const savedSession = JSON.parse(sessionString);
+      if (savedSession.token && savedSession.refresh_token) {
+        const session = Session.restore(savedSession.token, savedSession.refresh_token);
+        if (!session.isexpired) {
+          nakamaSession = session;
+          return session;
+        }
+      }
+    } catch (e) {
+      console.error("Failed to parse or restore Nakama session:", e);
+      localStorage.removeItem("nakama_session"); // Clear corrupted session data
+    }
   }
 
-  // Use a simple custom ID based on username for demo/dev purposes
-  // In production, you'd use authenticateDevice or authenticateEmail
-  const customId = `ttt-user-${username}`;
-  const session = await nakamaClient.authenticateCustom(customId, true, username);
+  // If no valid session, authenticate as a new or existing user.
+  let deviceId = localStorage.getItem("nakama_device_id");
+  if (!deviceId) {
+    deviceId = crypto.randomUUID();
+    localStorage.setItem("nakama_device_id", deviceId);
+  }
+
+  let session: Session;
+  try {
+    session = await nakamaClient.authenticateDevice(deviceId, true, username);
+  } catch (e: any) {
+    if (e.code === 6 || (e.message && e.message.toLowerCase().includes('username is already in use'))) {
+      throw new Error("Username is already taken. Please choose another.");
+    } else {
+      throw e;
+    }
+  }
+
   nakamaSession = session;
-  
-  // Sync current stats to the leaderboard on login
-  getUserStats(session).then(() => {
-    updateUserStats(session, {});
-  }).catch(() => {});
-  
-  localStorage.setItem("nakama_session", session.token);
+  localStorage.setItem("nakama_session", JSON.stringify({ 
+    token: session.token, 
+    refresh_token: session.refresh_token 
+  }));
   return session;
 };
 
@@ -124,6 +149,10 @@ export const getLeaderboard = async (session: Session) => {
 };
 
 export const updateUserStats = async (session: Session, updates: { isWin?: boolean; isLoss?: boolean; isDraw?: boolean }) => {
+  // If there are no updates, no need to proceed
+  if (Object.keys(updates).length === 0) {
+    return await getUserStats(session);
+  }
   const currentStats = await getUserStats(session);
   
   const newStats = { ...currentStats };
