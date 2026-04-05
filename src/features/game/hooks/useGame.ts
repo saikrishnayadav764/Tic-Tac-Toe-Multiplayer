@@ -106,7 +106,7 @@ export const useGame = () => {
               const currentSymbol = useGameStore.getState().symbol;
               setWinner(currentSymbol);
               setStatus("finished");
-              setError("Opponent left the match. You win!");
+              setError({ title: "Opponent Left", message: "Your opponent has left the match. You win!" });
             }
           }
         };
@@ -198,7 +198,7 @@ export const useGame = () => {
 
       } catch (e: any) {
         console.error("Nakama initialization error:", e);
-        setError(e.message || "Failed to connect to Nakama server");
+        setError({ title: "Connection Error", message: e.message || "Failed to connect to the server." });
         setConnected(false);
         setStatus("idle");
       }
@@ -318,7 +318,7 @@ export const useGame = () => {
         await socketRef.current.leaveMatch(matchId);
       } catch (e) {
         console.error("Failed to leave match:", e);
-        setError("Failed to leave match");
+        setError({ title: "Match Error", message: "Failed to leave the match." });
       } finally {
         reset();
       }
