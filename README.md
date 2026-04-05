@@ -55,12 +55,12 @@ We use Nakama's built-in matchmaker with a simple requirement of 2 players. This
 
 ## 🌐 Deployment
 
-- **Nakama Server**: Deployed at `http://eef.monster:7350`.
-- **Frontend**: Deployed and accessible via the provided AI Studio Build URL.
+- **Nakama Server**: Deployed at `https://eef.monster`.
+- **Frontend**: Deployed and accessible via the [Play Tic Tac Toe Multiplayer](https://tic-tac-toe-multiplayer-swart.vercel.app/).
 
 ## 🧪 How to Test
 
-1. Open the application URL in two separate browser tabs or windows.
+1. Open the application in two different browsers (e.g., Chrome and Firefox) or use one normal window and one guest window to simulate multiple players.
 2. Enter a unique nickname in each tab.
 3. Click "Find Match" in both tabs.
 4. Once matched, play the game. Observe real-time updates and turn indicators.
